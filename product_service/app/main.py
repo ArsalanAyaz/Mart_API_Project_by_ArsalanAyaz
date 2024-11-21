@@ -93,3 +93,5 @@ def update_single_product(product_id: int, product: ProductUpdate, session: Anno
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    # return {"product updated":"ok"}    

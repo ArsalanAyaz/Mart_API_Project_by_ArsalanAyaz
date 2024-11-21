@@ -41,7 +41,8 @@ def update_product_by_id(product_id: int, to_update_product_data:ProductUpdate, 
     product.sqlmodel_update(hero_data)
     session.add(product)
     session.commit()
-    return product
+    # return product
+    return {"message": "Product updated Successfully"}
 
 
 

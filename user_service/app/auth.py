@@ -97,12 +97,22 @@ def current_user(token: Annotated[str, Depends(oauth_scheme)],
     return user_data
 
 
+# def admin_required(current_user: Annotated[User, Depends(current_user)]):
+#     if current_user.role != Role.ADMIN:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Admin access required"
+#         )
+#     return current_user   
+
 def admin_required(current_user: Annotated[User, Depends(current_user)]):
-    if current_user.role != Role.ADMIN:
+    if current_user["role"] != Role['ADMIN']:
+    # if current_user.role != Role.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
         )
-    return current_user    
+    return current_user
+
 
 

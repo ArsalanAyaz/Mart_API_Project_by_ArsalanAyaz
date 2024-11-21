@@ -39,7 +39,8 @@ def read_root():
 
 @app.get("/test")
 def test(current_user: Annotated[User, Depends(current_user)]):
-    if current_user.role != "USER":
+    if current_user["role"] != "USER":
+    # if current_user.role != "USER":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin users are not allowed to access this route."
@@ -50,7 +51,8 @@ def test(current_user: Annotated[User, Depends(current_user)]):
 @app.get("/users/", response_model=list[User])
 def read_users(current_user: Annotated[User, Depends(admin_required)], session: Annotated[Session, Depends(get_session)]):
     """ Get all users from the database except the admin's own information """
-    return get_all_users(session, admin_user_id=current_user.id)
+    # return get_all_users(session, admin_user_id=current_user.id)
+    return get_all_users(session, admin_user_id=current_user["id"])
 
 
 @app.get("/users/{user_id}", response_model=User,dependencies=[Depends(admin_required)])
@@ -73,7 +75,8 @@ def delete_user(user_id: int, session: Annotated[Session, Depends(get_session)])
 async def update_single_user(user_id: int, user: UserUpdate, session: Annotated[Session, Depends(get_session)],producer: Annotated[AIOKafkaProducer, Depends(get_kafka_producer)],current_user: Annotated[User, Depends(current_user)]):
     """ Update a single user by ID"""
 
-    if current_user.id != user_id:
+    if current_user["id"] != user_id:
+    # if current_user.id != user_id:
         raise HTTPException(
             status_code=403, detail="You can only update your own account."
         )

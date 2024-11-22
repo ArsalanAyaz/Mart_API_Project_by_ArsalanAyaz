@@ -29,48 +29,49 @@ async def consume_payment_response_message(topic, bootstrap_servers):
     finally:
         await consumer.stop()
 
+# =============================================
 
+async def consume_payment_response_message(topic, bootstrap_servers):
+    consumer = AIOKafkaConsumer(
+        topic,
+        bootstrap_servers=bootstrap_servers,
+        group_id="order-status-update-group",
+        auto_offset_reset="earliest",
+    )
 
-# async def consume_payment_response_message(topic, bootstrap_servers):
-#     consumer = AIOKafkaConsumer(
-#         topic,
-#         bootstrap_servers=bootstrap_servers,
-#         group_id="order-status-update-group",
-#         auto_offset_reset="earliest",
-#     )
-
-#     await consumer.start()
-#     try:
-#         async for message in consumer:
-#             print(f"Received message on topic {message.topic}")
-#             payment_data = json.loads(message.value.decode())
-#             print(f"Received payment event: {payment_data}")
+    await consumer.start()
+    try:
+        async for message in consumer:
+            print(f"Received message on topic {message.topic}")
+            payment_data = json.loads(message.value.decode())
+            print(f"Received payment event: {payment_data}")
             
-#             # Ensure the payment data contains the required fields
-#             order_id = payment_data.get('order_id')
-#             status = payment_data.get('status')
+            # Ensure the payment data contains the required fields
+            order_id = payment_data.get('order_id')
+            status = payment_data.get('status')
             
-#             if status == "Paid":
-#                 session = next(get_session())
-#                 try:
-#                     order = session.exec(select(Order).where(Order.id == order_id)).one_or_none()
-#                     if order:
-#                         order.status = "Paid"
-#                         session.add(order)
-#                         session.commit()
-#                         session.refresh(order)
-#                         print(f"Order {order_id} status updated to 'Paid'")
-#                     else:
-#                         print(f"Order {order_id} not found")
-#                 except Exception as e:
-#                     session.rollback()
-#                     print(f"Failed to update order status: {e}")
-#                 finally:
-#                     session.close()
-#     finally:
-#         await consumer.stop()
+            if status == "Paid":
+                session = next(get_session())
+                try:
+                    # order = session.exec(select(Order).where(Order.id == order_id)).one_or_none()
+                    order = session.exec(select(Order).where(Order["id"] == order_id)).one_or_none()
+                    if order:
+                        order.status = "Paid"
+                        session.add(order)
+                        session.commit()
+                        session.refresh(order)
+                        print(f"Order {order_id} status updated to 'Paid'")
+                    else:
+                        print(f"Order {order_id} not found")
+                except Exception as e:
+                    session.rollback()
+                    print(f"Failed to update order status: {e}")
+                finally:
+                    session.close()
+    finally:
+        await consumer.stop()
 
-
+# ========================
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

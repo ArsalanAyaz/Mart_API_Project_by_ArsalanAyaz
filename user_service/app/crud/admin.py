@@ -13,9 +13,9 @@ def create_initial_admin():
         # Check if any admin exists
         existing_admin = session.exec(select(User).where(User.role == Role.ADMIN)).first()
         if not existing_admin:
-            admin_username = os.getenv("ADMIN_USERNAME", "ArsalanAyaz")
+            admin_username = os.getenv("ADMIN_USERNAME", "arsalan")
             admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
-            admin_password = os.getenv("ADMIN_PASSWORD", "adminpassword")
+            admin_password = os.getenv("ADMIN_PASSWORD", "123")
             
             admin_user = User(
                 username=admin_username,
